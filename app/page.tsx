@@ -24,7 +24,7 @@ export default function Home() {
   return (
     <main id="main" className="flex flex-col">
       <div id="main-first" className="h-screen flex flex-row space-between items-center justify-around duration-500 transition-all ease-in">
-        <Image src="/profile.jpeg" height={300} width={300} className="rounded-lg" alt="Profile picture for Edward Ng"></Image>
+        <Image src="/website/profile.jpeg" height={300} width={300} className="rounded-lg" alt="Profile picture for Edward Ng"></Image>
         <div className="flex flex-col gap-y-2 m-20">
           <div className="text-7xl font-bold">
             Hello 👋, my name is Edward Ng
