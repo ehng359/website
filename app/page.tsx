@@ -22,10 +22,10 @@ export default function Home() {
   });
 
   return (
-    <main id="main" className="flex flex-col">
+    <main id="main" className="flex flex-col items-center mx-32">
       <div id="main-first" className="h-screen flex flex-row space-between items-center justify-around duration-500 transition-all ease-in">
         <Image src="/website/profile.jpeg" height={300} width={300} className="rounded-lg" alt="Profile picture for Edward Ng"></Image>
-        <div className="flex flex-col gap-y-2 m-20">
+        <div className="flex flex-col gap-y-8 m-20">
           <div className="text-7xl font-bold">
             Hello 👋, my name is Edward Ng
           </div>
@@ -35,10 +35,11 @@ export default function Home() {
           >
             Welcome to my website. I am a 4th-year student <a href="https://www.ucla.edu" target="_blank" className="hover:underline hover:underline-offset-6">@UCLA</a>.<br />
           </div>
+          <input placeholder="What's new with Edward Ng? (blog)" className="text-2xl w-1/2 h-2 border-4 border-spacing-4 p-6 border-main rounded-2xl">
+          </input>
         </div>
       </div>
-      <div className="relative -mx-32 -mt-16 h-16 w-screen bg-accent">
-        Insert banner here
+      <div className="relative -mx-32 -mt-16 h-16 w-2/3 bg-accent rounded-3xl">
       </div>
       <div className="h-screen bg-grey">
         content covering
@@ -46,6 +47,6 @@ export default function Home() {
       <div className="h-screen bg-grey">
         content covering
       </div>
-    </main>
+    </main >
   );
 }
