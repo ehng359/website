@@ -33,7 +33,7 @@ export default function NavBar() {
     }, [scroll])
 
     return (
-        <main id="navbar" className={`w-1/2 ${h} ${bg} text-black px-16 flex justify-center items-center rounded-full fixed left-1/4 top-4 transition-all duration-500 delay-100 bg-opacity-95`}>
+        <main id="navbar" className={`z-50 w-1/2 ${h} ${bg} text-black px-16 flex justify-center items-center rounded-full fixed left-1/4 top-4 transition-all duration-500 delay-100 bg-opacity-90`}>
             <div className={`flex flex-row justify-around items-center gap-x-4 w-full`}>
                 <Link href="/projects" className={`hover:underline ${fg} ${textSize} transition-all delay-100 duration-500`}>Projects</Link>
                 <Link href="/about" className={`hover:underline ${fg} ${textSize} transition-all delay-200 duration-500`}>About Me</Link>
