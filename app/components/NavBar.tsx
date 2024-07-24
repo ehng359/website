@@ -5,19 +5,18 @@ import Image from "next/image"
 import NotifCard from "./NotifCard";
 
 export default function NavBar() {
-    const [{ fg, bg, textSize, h }, setBg] = useState({ fg: "text-white", bg: "bg-main", textSize: "text-lg", h: "h-12" });
+    const [{ fg, bg, textSize, h }, setBg] = useState({ fg: "text-white", bg: "bg-main", textSize: "text-lg", h: "h-10" });
     const [scroll, setScroll] = useState(0);
     const [showNotifs, setShowNotifs] = useState(false);
-    const notifRef = useRef(null);
 
     // Run on the initial render only
     useEffect(() => {
         document.getElementById('navbar')?.addEventListener('mouseover', () => {
-            setBg({ fg: "text-white", bg: "bg-main", textSize: "text-lg", h: "h-12" })
+            setBg({ fg: "text-white", bg: "bg-main", textSize: "text-lg", h: "h-10" })
         })
 
         document.getElementById('navbar')?.addEventListener('mouseout', () => {
-            setBg({ fg: "text-black", bg: "bg-white", textSize: "text-sm", h: "h-8" })
+            setBg({ fg: "text-black", bg: "bg-white", textSize: "text-sm", h: "h-6" })
         })
     }, [])
 
@@ -25,9 +24,9 @@ export default function NavBar() {
         window.addEventListener('scroll', (event) => {
             console.log(scroll, window.scrollY)
             if (scroll < window.scrollY - 500) {
-                setBg({ fg: "text-black", bg: "bg-white", textSize: "text-sm", h: "h-8" });
+                setBg({ fg: "text-black", bg: "bg-white", textSize: "text-sm", h: "h-6" });
             } else if (scroll > window.scrollY + 500) {
-                setBg({ fg: "text-white", bg: "bg-main", textSize: "text-lg", h: "h-12" });
+                setBg({ fg: "text-white", bg: "bg-main", textSize: "text-lg", h: "h-10" });
             }
             setScroll(window.scrollY);
         })
@@ -41,10 +40,11 @@ export default function NavBar() {
                 <Link href="https://github.com/ehng359" target="_blank" className={`hover:underline ${fg} ${textSize} transition-all delay-300 duration-500`}>Github</Link>
             </div>
             <div className="relative left-1/4 flex flex-col items-center">
-                <Image src="/website/notification.svg" height={36} width={36} alt="notification icon" onMouseOver={() => { setShowNotifs(true); }} />
+                <Image src="/website/notification.svg" height={28} width={28} alt="notification icon" onMouseOver={() => { setShowNotifs(true); }} />
                 {
                     showNotifs ?
                         <div className="absolute mt-12 p-4 w-96 rounded-lg bg-accent" onMouseLeave={() => { setShowNotifs(false); }}>
+                            <NotifCard content={`07/23/24 - Initial rundown at creating projects showcase.`} />
                             <NotifCard content={`07/22/24 - Initial rundown at creating notification bar.`} />
                         </div>
                         :
