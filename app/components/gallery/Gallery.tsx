@@ -5,16 +5,18 @@ import GalleryCard from "./GalleryCard"
 export interface GalleryProps {
     data: {
         title: String,
-        description: String,
-        image: String
+        description: String[],
+        image: String,
+        tags: String[],
     }[]
 }
 
 export function Gallery({ data }: GalleryProps) {
     const [content, setContent] = useState<{
         title: String,
-        description: String,
-        image: String
+        description: String[],
+        image: String,
+        tags: String[],
     }[]>([]);
     const [index, setIndex] = useState<number>(-1)
 

@@ -1,27 +1,71 @@
 [
     {
         "title": "Roommates",
-        "description": "Placeholder lorem ipsum",
-        "image": "Placeholder"
+        "description": [
+            "Performing user-research and competitive analysis on applications for enabling secure monetary transactions.",
+            "Creating low-fidelity mockups on user-flows detailing the scope of the app, general navigation and app-themes.",
+            "Incorporating CV ML frameworks to enable receipt parsing and automatic itemization of shared costs.",
+            "Researching and developing centralized framework enabling secure transactions between any 3rd-party financial application and banking institutions in React Native; creating efficient money-splitter and room manager."
+        ],
+        "image": "Placeholder",
+        "tags": [
+            "React Native",
+            "ML/AI",
+            "Express",
+            "MongoDB"
+        ]
     },
     {
         "title": "WriteGirl",
-        "description": "Placeholder lorem ipsum",
-        "image": "Placeholder"
+        "description": [
+            "Developed a full-stack mobile application (React Native) for non-profit organization 'WriteGirl' to empower underserved youth writers to develop creative writing with features like writing activities, prompt randomizers, and pep talks.",
+            "Implemented authenticated, persistent user data using SecureStore with Redux and protected routes using PassportJS to push serialized sensitive user data into MongoDB.",
+            "Collaborated in agile development setting with 12 developers and designers to create deliverables consistent with WriteGirl's mission and branding.",
+            "Developed docs/support materials for non-profit clients to enable independent maintenance of project solutions."
+        ],
+        "image": "Placeholder",
+        "tags": [
+            "React Native",
+            "Express",
+            "MongoDB"
+        ]
     },
     {
         "title": "MiniJava Compiler",
-        "description": "Placeholder lorem ipsum",
-        "image": "Placeholder"
+        "description": [
+            "Constructed LL(1) language token parser in Java to verify program validity in single-pass file scans by generating and processing abstract syntax trees for lexical analysis.",
+            "Implemented comprehensive object-oriented type-checker to perform static analysis by designing symbol table management systems to track identifiers and associated scopes, enhancing error detection.",
+            "Developed linear-scan register allocation heuristic via liveness analysis on variables using the Visitor strategy.",
+            "Developed intermediate representation (IR) code generation routines to transpile directly into RISC-V language."
+        ],
+        "image": "Placeholder",
+        "tags": [
+            "Java"
+        ]
     },
     {
         "title": "Planit",
-        "description": "Placeholder lorem ipsum",
-        "image": "Placeholder"
+        "description": [
+            "Integrated React.js app with SeatGeek/Yelp API to schedule user itineraries based on geographic location.",
+            "Implemented responsive, interactive calendar enabling clearing, rescheduling, resizing and drag-to-reschedule features, displaying a week-view to plan with and interact with live events.",
+            "Enabled .ics export to allow any personalized itinerary schedule to be added to any third-party calendar app."
+        ],
+        "image": "Placeholder",
+        "tags": [
+            "React",
+            "Yelp API",
+            "SeatGeek API"
+        ]
     },
     {
         "title": "Unhinged",
-        "description": "Placeholder lorem ipsum",
-        "image": "Placeholder"
+        "description": [
+            "Constructed a matchmaking project (C++), based on self-described attributes to efficiently match individuals across upwards to 1,000,000+ other candidates through user profiles.",
+            "Designed and incorporated a radix-tree implementation for highly space efficient data storage in large user databases to optimize queries for ideal candidates and matches with low latency searches."
+        ],
+        "image": "Placeholder",
+        "tags": [
+            "C++"
+        ]
     }
 ]

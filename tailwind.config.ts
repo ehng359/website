@@ -43,9 +43,9 @@ const config: Config = {
         },
       },
       colors: {
-        'main': '#A5402D',
+        'main': '#DD7A68',
         'accent': '#FFA69E',
-        'dark': '#020202'
+        'dark': '#23262F'
       }
     },
   },
