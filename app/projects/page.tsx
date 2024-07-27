@@ -1,15 +1,8 @@
-export default function Home() {
+
+export default function Projects() {
   return (
     <main >
-      <div className="h-screen bg-grey">
-        content covering
-      </div>
-      <div className="h-screen bg-grey">
-        content covering
-      </div>
-      <div className="h-screen bg-grey">
-        content covering
-      </div>
+
     </main>
   );
 }
