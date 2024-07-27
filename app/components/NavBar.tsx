@@ -25,7 +25,6 @@ export default function NavBar() {
 
     useEffect(() => {
         window.addEventListener('scroll', (event) => {
-            console.log(scroll, window.scrollY)
             if (scroll < window.scrollY - 500) {
                 setBg({ fg: "text-black", bg: "bg-white", textSize: "text-sm", h: "h-8" });
             } else if (scroll > window.scrollY + 500) {

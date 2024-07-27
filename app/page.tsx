@@ -5,6 +5,7 @@ import { Gallery } from "./components/gallery/Gallery";
 import { motion } from "framer-motion";
 
 import projectsData from '../app/data/projects.json'
+import Timeline from "./components/timeline/Timeline";
 
 export default function Home() {
   useEffect(() => {
@@ -54,16 +55,14 @@ export default function Home() {
           </input>
         </motion.div>
       </div>
-      <div className="relative -mx-32 -mt-16 h-16 w-2/3 bg-accent rounded-3xl">
-      </div>
-      <div className="h-screen bg-grey m-8">
-        <div className="text-2xl p-4">
+      <div className="bg-grey m-8">
+        <div className="text-2xl px-16">
           Here are some cool things that I have done.
         </div>
         <Gallery data={projectsData} />
       </div>
-      <div className="h-screen bg-grey">
-        content covering
+      <div>
+        <Timeline />
       </div>
     </main >
   );

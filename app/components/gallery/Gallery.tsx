@@ -34,7 +34,7 @@ export function Gallery({ data }: GalleryProps) {
             <div className="relative h-[1em] bg-black w-screen bg-gradient-to-t from-slate-900 to-slate-50 opacity-50">
             </div>
             <div className="relative flex flex-row justify-around items-center">
-                <div className="absolute z-20 bg-black w-[100%] h-full opacity-85" onClick={() => { setIndex(-1) }}>
+                <div className="absolute z-20 bg-black w-screen h-full opacity-85" onClick={() => { setIndex(-1) }}>
                     {
                         index !== -1 ? (
                             <div className="bg-black z-30 ml-[5%] mt-[5%] mr-[30%] text-white text-2xl flex flex-col justify-center gap-y-2">
@@ -74,7 +74,7 @@ export function Gallery({ data }: GalleryProps) {
                     }
                 </div>
             </div>
-            <div className="relative h-[8em] bg-black w-screen bg-gradient-to-b from-slate-900 to-slate-50 opacity-50">
+            <div className="relative h-[2em] bg-black w-screen bg-gradient-to-b from-slate-900 to-slate-50 opacity-50">
             </div>
         </div>
     )
