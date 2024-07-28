@@ -5,7 +5,7 @@ import { Gallery } from "./components/gallery/Gallery";
 import { motion } from "framer-motion";
 
 import projectsData from '../app/data/projects.json'
-import Timeline from "./components/timeline/Timeline";
+import Timeline from "./components/terminal/Terminal";
 
 export default function Home() {
   useEffect(() => {
@@ -61,8 +61,8 @@ export default function Home() {
         </div>
         <Gallery data={projectsData} />
       </div>
-      <div>
-        <Timeline />
+      <div className="h-screen">
+
       </div>
     </main >
   );
