@@ -1,0 +1,57 @@
+{
+    "2021": {
+        "Spring": {},
+        "Summer": {},
+        "Fall": {
+            "Garks": ""
+        },
+        "Winter": {
+            "Super Peach Sisters": "",
+            "Unhinged": ""
+        }
+    },
+    "2022": {
+        "Spring": {
+            "ChipIn": ""
+        },
+        "Summer": {
+            "JWC_Rock-Wall_Auto-Reservation": ""
+        },
+        "Fall": {
+            "Planit": ""
+        },
+        "Winter": {
+            "Mapify": ""
+        }
+    },
+    "2023": {
+        "Spring": {
+            "WEYM": ""
+        },
+        "Summer": {
+            "watchOS_biometrics_tracker": "",
+            "Cohabit": "",
+            "Groupify": ""
+        },
+        "Fall": {
+            "WriteGirl": "",
+            "Project_Car": "",
+            "Brewin_Interpreter": ""
+        },
+        "Winter": {
+            "EEG_Signal_Classification": ""
+        }
+    },
+    "2024": {
+        "Spring": {
+            "Kanban_Board": "",
+            "MiniJava_Compiler": ""
+        },
+        "Summer": {
+            "Roommates": "",
+            "Edwards_Website": ""
+        },
+        "Fall": {},
+        "Winter": {}
+    }
+}

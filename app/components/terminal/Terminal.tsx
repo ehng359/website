@@ -1,9 +1,12 @@
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
 import { SetStateAction, useEffect, useRef, useState, Dispatch, KeyboardEvent } from 'react';
 import Image from 'next/image';
+import fileSystem from '../../data/filesystem.json'
 interface TerminalProps {
     children?: React.JSX.Element
 }
+
+const FS: { [key: string]: { [key: string]: { [key: string]: string } } } = fileSystem;
 
 export default function Terminal({ }: TerminalProps) {
     const ref = useRef(null);
@@ -11,23 +14,38 @@ export default function Terminal({ }: TerminalProps) {
         target: ref,
         offset: ["start end", "end end"],
     });
-    const [command, setCommand]: [String, Dispatch<SetStateAction<String>>] = useState<String>("");
+    const [command, setCommand]: [string, Dispatch<SetStateAction<string>>] = useState<string>("");
+    const [logs, setLogs]: [React.JSX.Element[], Dispatch<SetStateAction<React.JSX.Element[]>>] = useState<React.JSX.Element[]>([]);
+    const [workingDirectory, setWorkingDirectory]: [string[], Dispatch<SetStateAction<string[]>>] = useState<string[]>([]);
 
-    const supportedCommands = {
+    const supportedCommands: { [key: string]: (args: string[]) => void } = {
         "ls": handleList,
-        "cd": changeDirectory,
-        "cat": catFile,
+        "cd": handleChangeDirectory,
+        "cat": handleCatFile,
     }
 
-    function handleList() {
+    function handleList(args: string[]) {
+        if (args.length > 1) {
+            setLogs([...logs, <p key={logs.length}>visitor@eggland {new Date().toLocaleTimeString()}$ <span className={`text-red-500`}>Error with usage of ls: more than one argument was provided</span></p>])
+            return;
+        }
+
+        // let location: any = FS;
+        // for (let pathMarker of workingDirectory) {
+        //     location = location[pathMarker];
+        // }
+
+        // const intendedLocation: string[] = args[0].split("/");
+        // for (let pathMarker of intendedLocation) {
+
+        // }
+    }
+
+    function handleChangeDirectory(args: string[]) {
 
     }
 
-    function changeDirectory() {
-
-    }
-
-    function catFile() {
+    function handleCatFile(args: string[]) {
 
     }
 
@@ -49,7 +67,22 @@ export default function Terminal({ }: TerminalProps) {
 
     function processFunction() {
         const delimitedCommand = command.split(" ");
-        console.log(delimitedCommand);
+        if (delimitedCommand.length < 1) {
+            return;
+        }
+        const action = delimitedCommand[0];
+        const args = delimitedCommand.slice(1);
+
+        if (supportedCommands[action] == null) {
+            setLogs([...logs, <p key={logs.length}>visitor@eggland {new Date().toLocaleTimeString()}$ <span className='text-red-500'>Invalid command: {`\`${action}\``} was not recognized.</span></p>])
+            return;
+        }
+
+        supportedCommands[action](args);
+    }
+
+    function findContentsOfPath() {
+
     }
 
     return (
@@ -78,8 +111,8 @@ export default function Terminal({ }: TerminalProps) {
                                                                                                                                                                                                                                                            
 ___________    .___                         .__/\\      __________                   __               __              
 \\_   _____/  __| _/_  _  _______ _______  __| _)/_____ \\______   \\_______  ____    |__| ____   _____/  |_  ______    
-|    __)_  / __ |\\ \\/ \\/ /\\__  \\\\_  __ \\/ __ |/  ___/  |     ___/\\_  __ \\/  _ \\   |  |/ __ \\_/ ___\\   __\\/  ___/    
-|        \\/ /_/ | \\     /  / __ \\|  | \\/ /_/ |\\___ \\   |    |     |  | \\(  <_> )  |  \\  ___/\\  \\___|  |  \\___ \\     
+ |    __)_  / __ |\\ \\/ \\/ /\\__  \\\\_  __ \\/ __ |/  ___/  |     ___/\\_  __ \\/  _ \\   |  |/ __ \\_/ ___\\   __\\/  ___/    
+ |        \\/ /_/ | \\     /  / __ \\|  | \\/ /_/ |\\___ \\   |    |     |  | \\(  <_> )  |  \\  ___/\\  \\___|  |  \\___ \\     
 /_______  /\\____ |  \\/\\_/  (____  /__|  \\____ /____  >  |____|     |__|   \\____/\\__|  |\\___  >\\___  >__| /____  >    
         \\/      \\/              \\/           \\/    \\/                          \\______|    \\/     \\/          \\/     
                                                                                                                     
@@ -89,10 +122,19 @@ ______   ______   ______   ______   ______   ______   ______   ______   ______  
                         `}
                         </code>
                     </pre>
-                    <p>Welcome to my projects page!</p>
-                    <p>To access any projects: use `ls` to list the current information in the directory</p>
-                    <p>To change directories into a particular year: use `cd &lt;DIRECTORY&gt;` to switch the current directory.</p>
-                    <p>to view any projects in detail: use `cat &lt;FILE_NAME&gt;` to view the article.</p>
+                    <div className='mb-[1%]'>
+                        <p>Welcome to my projects page!</p>
+                        <p>To access any projects: use `ls` to list the current information in the directory</p>
+                        <p>To change directories into a particular year: use `cd &lt;DIRECTORY&gt;` to switch the current directory.</p>
+                        <p>to view any projects in detail: use `cat &lt;FILE_NAME&gt;` to view the article.</p>
+                    </div>
+                    {
+                        logs.map((log, idx) => {
+                            return (
+                                log
+                            )
+                        })
+                    }
                 </div>
             </div>
             <div className='flex flex-row justify-center items-center gap-x-4 text-white text-l w-[80%] py-4 bg-[#2d3039] rounded-xl rounded-t-none'>
