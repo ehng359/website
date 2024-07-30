@@ -16,6 +16,8 @@ export default function Terminal({ }: TerminalProps) {
     });
     const [command, setCommand]: [string, Dispatch<SetStateAction<string>>] = useState<string>("");
     const [logs, setLogs]: [React.JSX.Element[], Dispatch<SetStateAction<React.JSX.Element[]>>] = useState<React.JSX.Element[]>([]);
+    const [suggestions, setSuggestions]: [React.JSX.Element[], Dispatch<SetStateAction<React.JSX.Element[]>>] = useState<React.JSX.Element[]>([]);
+
     const [workingDirectory, setWorkingDirectory]: [string[], Dispatch<SetStateAction<string[]>>] = useState<string[]>([]);
 
     const supportedCommands: { [key: string]: (args: string[]) => void } = {
@@ -24,21 +26,47 @@ export default function Terminal({ }: TerminalProps) {
         "cat": handleCatFile,
     }
 
+    useEffect(() => {
+        const children = document.getElementById("terminal-scroll-view")?.children;
+        if (children !== undefined && children[children.length - 1] != undefined) {
+            children[children.length - 1].scrollIntoView(true);
+        }
+    }, [logs])
+
     function handleList(args: string[]) {
         if (args.length > 1) {
-            setLogs([...logs, <p key={logs.length}>visitor@eggland {new Date().toLocaleTimeString()}$ <span className={`text-red-500`}>Error with usage of ls: more than one argument was provided</span></p>])
+            setLogs([...logs, <p key={logs.length}>visitor@eggland {new Date().toLocaleTimeString()}$ ls {args.join(" ")}</p>, <p key={logs.length + 1}>visitor@eggland {new Date().toLocaleTimeString()}$ <span className={`text-red-500`}>Error with usage of ls: more than one argument was provided</span></p>])
             return;
         }
 
-        // let location: any = FS;
-        // for (let pathMarker of workingDirectory) {
-        //     location = location[pathMarker];
-        // }
+        let locationDirectory = [...workingDirectory];
+        let intendedLocation: string[] = [];
+        if (args.length > 0) {
+            intendedLocation = args[0].split("/");
+            if (intendedLocation[intendedLocation.length - 1] === '') {
+                intendedLocation.pop();
+            }
+            console.log(intendedLocation);
+        }
+        for (let pathMarker of intendedLocation) {
+            if (pathMarker === ".") {
+                continue;
+            } else if (pathMarker === "..") {
+                locationDirectory.pop();
+                continue;
+            }
+            locationDirectory.push(pathMarker);
+        }
 
-        // const intendedLocation: string[] = args[0].split("/");
-        // for (let pathMarker of intendedLocation) {
-
-        // }
+        let directory: any = FS;
+        for (let pathMarker of locationDirectory) {
+            if (!(pathMarker in directory)) {
+                setLogs([...logs, <p key={logs.length}>visitor@eggland {new Date().toLocaleTimeString()}$ ls {args.join(" ")}</p>, <p key={logs.length + 1}>visitor@eggland {new Date().toLocaleTimeString()}$ <span className={`text-red-500`}>Error with usage of ls: token {`${pathMarker}`} not found in file system.</span></p>])
+                return;
+            }
+            directory = directory[pathMarker];
+        }
+        setLogs([...logs, <p key={logs.length}>visitor@eggland {new Date().toLocaleTimeString()}$ ls {args.join(" ")}</p>, <p key={logs.length + 1} className='flex flex-row gap-x-[5%]'>{Object.getOwnPropertyNames(directory).map((entry, idx) => <p key={idx}>{entry}</p>)}</p>])
     }
 
     function handleChangeDirectory(args: string[]) {
@@ -57,6 +85,69 @@ export default function Terminal({ }: TerminalProps) {
 
             const target = e.target as HTMLTextAreaElement
             target.value = "";
+            return;
+        } else if (e.key === "Tab") {
+            e.preventDefault();
+            let delimitedCommand = command.split(" ");
+            let suggestionsBuffer = []
+
+            if (delimitedCommand.length <= 1) {
+                let match = RegExp(`^${delimitedCommand[delimitedCommand.length - 1]}`);
+                for (let commandName of Object.getOwnPropertyNames(supportedCommands)) {
+                    if (match.test(commandName)) {
+                        suggestionsBuffer.push(<p key={commandName}>{commandName}</p>)
+                    }
+                }
+            } else {
+                // const action = delimitedCommand[0];
+                const args = delimitedCommand.slice(-1);
+
+                let locationDirectory = [...workingDirectory];
+                let intendedLocation: string[] = args[0].split("/");
+
+                for (let pathMarker of intendedLocation.slice(0, -1)) {
+                    if (pathMarker === ".") {
+                        continue;
+                    } else if (pathMarker === "..") {
+                        locationDirectory.pop();
+                        continue;
+                    }
+                    locationDirectory.push(pathMarker);
+                }
+
+                let directory: any = FS;
+                for (let pathMarker of locationDirectory) {
+                    if (!(pathMarker in directory)) {
+                        setSuggestions([]);
+                        return;
+                    }
+                    directory = directory[pathMarker];
+                }
+                let match = RegExp(intendedLocation[intendedLocation.length - 1]);
+                console.log(match)
+                let lastEntry = "";
+                for (let entry of Object.getOwnPropertyNames(directory)) {
+                    if (match.test(entry)) {
+                        lastEntry = entry;
+                        suggestionsBuffer.push(<p key={entry}>{entry}</p>)
+                    }
+                }
+
+                if (suggestionsBuffer.length === 1) {
+                    intendedLocation[intendedLocation.length - 1] = lastEntry;
+                    delimitedCommand[delimitedCommand.length - 1] = intendedLocation.join('/');
+                    const target = e.target as HTMLTextAreaElement
+                    const newSearch = delimitedCommand.join(" ")
+
+                    target.value = newSearch;
+                    setCommand(newSearch);
+                }
+            }
+            setSuggestions(suggestionsBuffer);
+            return;
+        } else if (e.key === "Backspace") {
+            const target = e.target as HTMLTextAreaElement;
+            setCommand(command.slice(0, -1));
             return;
         } else if (e.key.length > 1) {
             return;
@@ -87,7 +178,7 @@ export default function Terminal({ }: TerminalProps) {
 
     return (
         <div id="terminal-window" className='flex m-8 items-center flex-col rounded-xl'>
-            <div className='relative flex flex-row gap-x-4 px-4 py-2 w-[80%] rounded-xl bg-[#2d3039] justify-center items-center rounded-b-none'>
+            <div className='relative flex flex-row gap-x-4 px-4 py-2 w-[80vw] rounded-xl bg-[#2d3039] justify-center items-center rounded-b-none'>
                 <div className='absolute flex flex-row gap-x-4 left-[2.5%]'>
                     <div className='bg-[#FF605C] rounded-full w-4 h-4' />
                     <div className='bg-[#FFBD44] rounded-full w-4 h-4' />
@@ -100,11 +191,12 @@ export default function Terminal({ }: TerminalProps) {
                     </div>
                 </div>
             </div>
-            <div className='relative w-[80%] h-[80vh] bg-dark flex flex-col justify-between items-center'>
-                <div className='absolute text-white left-[5%] bottom-[5%]'>
-                    <pre className='font-mono'>
+            <div className='relative w-[80vw] max-w-full h-[80vh] bg-dark flex flex-col justify-between items-center overflow-y-hidden overflow-x-hidden'>
+                <div className='absolute text-white left-[5%] overflow-x-clipped overflow-y-scroll h-full'>
+                    <pre className='font-mono text-sm'>
                         <code>
                             {`  
+ 
   _____   ______   ______   ______   ______   ______   ______   ______   ______   ______   ______   ______   ______ 
 /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/ 
 /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/ 
@@ -116,7 +208,7 @@ ___________    .___                         .__/\\      __________              
 /_______  /\\____ |  \\/\\_/  (____  /__|  \\____ /____  >  |____|     |__|   \\____/\\__|  |\\___  >\\___  >__| /____  >    
         \\/      \\/              \\/           \\/    \\/                          \\______|    \\/     \\/          \\/     
                                                                                                                     
-______   ______   ______   ______   ______   ______   ______   ______   ______   ______   ______   ______   ______ 
+ ______   ______   ______   ______   ______   ______   ______   ______   ______   ______   ______   ______   ______ 
 /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/ 
 /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  /_____/  
                         `}
@@ -128,16 +220,26 @@ ______   ______   ______   ______   ______   ______   ______   ______   ______  
                         <p>To change directories into a particular year: use `cd &lt;DIRECTORY&gt;` to switch the current directory.</p>
                         <p>to view any projects in detail: use `cat &lt;FILE_NAME&gt;` to view the article.</p>
                     </div>
-                    {
-                        logs.map((log, idx) => {
-                            return (
-                                log
-                            )
-                        })
-                    }
+                    <div id="terminal-scroll-view" className='absolute flex flex-col gap-y-[2%]'>
+                        {
+                            logs.map((log, idx) => {
+                                return (
+                                    log
+                                )
+                            })
+                        }
+                    </div>
                 </div>
             </div>
-            <div className='flex flex-row justify-center items-center gap-x-4 text-white text-l w-[80%] py-4 bg-[#2d3039] rounded-xl rounded-t-none'>
+            <div className='relative bg-dark w-[80vw]'>
+                <div id="suggestions" className='absolute flex flex-row items-center gap-x-[2%] text-white w-full mx-[5%]'>
+                    {
+                        suggestions.map((value) => value)
+                    }
+                </div>
+                shhh
+            </div>
+            <div className='flex flex-row justify-center items-center gap-x-4 text-white text-l w-[80vw] py-4 bg-[#2d3039] rounded-xl rounded-t-none'>
                 visitor@eggland $
                 <textarea id="terminal-entry" className='flex jusitfy-center items-center w-[75%] h-6 overflow-hidden bg-[#2d3039] resize-none' onKeyDown={handleKeyPress}>
                 </textarea>
