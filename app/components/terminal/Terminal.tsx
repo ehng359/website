@@ -8,12 +8,8 @@ interface TerminalProps {
 
 const FS: { [key: string]: { [key: string]: { [key: string]: string } } } = fileSystem;
 
-export default function Terminal({ }: TerminalProps) {
-    const ref = useRef(null);
-    const { scrollY } = useScroll({
-        target: ref,
-        offset: ["start end", "end end"],
-    });
+export default function Terminal({ children }: TerminalProps) {
+    const entryRef = useRef<HTMLTextAreaElement>(null);
     const [command, setCommand]: [string, Dispatch<SetStateAction<string>>] = useState<string>("");
     const [logs, setLogs]: [React.JSX.Element[], Dispatch<SetStateAction<React.JSX.Element[]>>] = useState<React.JSX.Element[]>([]);
     const [suggestions, setSuggestions]: [React.JSX.Element[], Dispatch<SetStateAction<React.JSX.Element[]>>] = useState<React.JSX.Element[]>([]);
@@ -70,7 +66,20 @@ export default function Terminal({ }: TerminalProps) {
     }
 
     function handleChangeDirectory(args: string[]) {
+        if (args.length > 1) {
+            setLogs([...logs, <p key={logs.length}>visitor@eggland {new Date().toLocaleTimeString()}$ ls {args.join(" ")}</p>, <p key={logs.length + 1}>visitor@eggland {new Date().toLocaleTimeString()}$ <span className={`text-red-500`}>Error with usage of cd: more than one argument was provided</span></p>])
+            return;
+        }
 
+        let locationDirectory = [...workingDirectory];
+        let intendedLocation: string[] = [];
+        if (args.length > 0) {
+            intendedLocation = args[0].split("/");
+            if (intendedLocation[intendedLocation.length - 1] === '') {
+                intendedLocation.pop();
+            }
+            console.log(intendedLocation);
+        }
     }
 
     function handleCatFile(args: string[]) {
@@ -82,6 +91,7 @@ export default function Terminal({ }: TerminalProps) {
             e.preventDefault();
             processFunction();
             setCommand("");
+            setSuggestions([]);
 
             const target = e.target as HTMLTextAreaElement
             target.value = "";
@@ -124,7 +134,6 @@ export default function Terminal({ }: TerminalProps) {
                     directory = directory[pathMarker];
                 }
                 let match = RegExp(intendedLocation[intendedLocation.length - 1]);
-                console.log(match)
                 let lastEntry = "";
                 for (let entry of Object.getOwnPropertyNames(directory)) {
                     if (match.test(entry)) {
@@ -140,14 +149,15 @@ export default function Terminal({ }: TerminalProps) {
                     const newSearch = delimitedCommand.join(" ")
 
                     target.value = newSearch;
-                    setCommand(newSearch);
+                    setCommand(newSearch)
                 }
             }
             setSuggestions(suggestionsBuffer);
             return;
         } else if (e.key === "Backspace") {
-            const target = e.target as HTMLTextAreaElement;
-            setCommand(command.slice(0, -1));
+            if (entryRef.current) {
+                setCommand(entryRef.current.innerText);
+            }
             return;
         } else if (e.key.length > 1) {
             return;
@@ -170,10 +180,6 @@ export default function Terminal({ }: TerminalProps) {
         }
 
         supportedCommands[action](args);
-    }
-
-    function findContentsOfPath() {
-
     }
 
     return (
@@ -241,7 +247,7 @@ ___________    .___                         .__/\\      __________              
             </div>
             <div className='flex flex-row justify-center items-center gap-x-4 text-white text-l w-[80vw] py-4 bg-[#2d3039] rounded-xl rounded-t-none'>
                 visitor@eggland $
-                <textarea id="terminal-entry" className='flex jusitfy-center items-center w-[75%] h-6 overflow-hidden bg-[#2d3039] resize-none' onKeyDown={handleKeyPress}>
+                <textarea ref={entryRef} id="terminal-entry" className='flex jusitfy-center items-center w-[75%] h-6 overflow-hidden bg-[#2d3039] resize-none' onKeyDown={handleKeyPress}>
                 </textarea>
             </div>
         </div >
