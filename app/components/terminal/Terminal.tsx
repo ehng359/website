@@ -9,7 +9,6 @@ interface TerminalProps {
 const FS: { [key: string]: { [key: string]: { [key: string]: string } } } = fileSystem;
 
 export default function Terminal({ children }: TerminalProps) {
-    const entryRef = useRef<HTMLTextAreaElement>(null);
     const [command, setCommand]: [string, Dispatch<SetStateAction<string>>] = useState<string>("");
     const [logs, setLogs]: [React.JSX.Element[], Dispatch<SetStateAction<React.JSX.Element[]>>] = useState<React.JSX.Element[]>([]);
     const [suggestions, setSuggestions]: [React.JSX.Element[], Dispatch<SetStateAction<React.JSX.Element[]>>] = useState<React.JSX.Element[]>([]);
@@ -67,19 +66,46 @@ export default function Terminal({ children }: TerminalProps) {
 
     function handleChangeDirectory(args: string[]) {
         if (args.length > 1) {
-            setLogs([...logs, <p key={logs.length}>visitor@eggland {new Date().toLocaleTimeString()}$ ls {args.join(" ")}</p>, <p key={logs.length + 1}>visitor@eggland {new Date().toLocaleTimeString()}$ <span className={`text-red-500`}>Error with usage of cd: more than one argument was provided</span></p>])
+            setLogs([...logs, <p key={logs.length}>visitor@eggland {new Date().toLocaleTimeString()}$ cd {args.join(" ")}</p>, <p key={logs.length + 1}>visitor@eggland {new Date().toLocaleTimeString()}$ <span className={`text-red-500`}>Error with usage of cd: more than one argument was provided</span></p>])
+            return;
+        }
+
+        if (args.length == 0) {
+            setWorkingDirectory([]);
             return;
         }
 
         let locationDirectory = [...workingDirectory];
         let intendedLocation: string[] = [];
-        if (args.length > 0) {
-            intendedLocation = args[0].split("/");
-            if (intendedLocation[intendedLocation.length - 1] === '') {
-                intendedLocation.pop();
-            }
-            console.log(intendedLocation);
+
+        intendedLocation = args[0].split("/");
+        if (intendedLocation[intendedLocation.length - 1] === '') {
+            intendedLocation.pop();
         }
+
+        // Updating to reach the appropriate directory location.
+        for (let entry of intendedLocation) {
+            if (entry == ".") {
+                continue;
+            } else if (entry == "..") {
+                locationDirectory.pop();
+            } else {
+                locationDirectory.push(entry);
+            }
+        }
+
+        let directory: any = FS;
+        for (let entry of locationDirectory) {
+            // To change if this doesn't generalize across articles.
+            if (!(entry in directory) || directory[entry] === '') {
+                setLogs([...logs, <p key={logs.length}>visitor@eggland {new Date().toLocaleTimeString()}$ cd {args.join(" ")}</p>, <p key={logs.length + 1}>visitor@eggland {new Date().toLocaleTimeString()}$ <span className={`text-red-500`}>Error with usage of cd: token `{entry}` is not a directory.</span></p>])
+                return;
+            }
+            directory = directory[entry];
+        }
+
+        setLogs([...logs, <p key={logs.length}>visitor@eggland {new Date().toLocaleTimeString()}$ cd {args.join(" ")}</p>])
+        setWorkingDirectory(locationDirectory);
     }
 
     function handleCatFile(args: string[]) {
@@ -109,7 +135,6 @@ export default function Terminal({ children }: TerminalProps) {
                     }
                 }
             } else {
-                // const action = delimitedCommand[0];
                 const args = delimitedCommand.slice(-1);
 
                 let locationDirectory = [...workingDirectory];
@@ -155,8 +180,10 @@ export default function Terminal({ children }: TerminalProps) {
             setSuggestions(suggestionsBuffer);
             return;
         } else if (e.key === "Backspace") {
-            if (entryRef.current) {
-                setCommand(entryRef.current.innerText);
+            if (e.metaKey) {
+                setCommand("");
+            } else {
+                setCommand(command.slice(0, -1));
             }
             return;
         } else if (e.key.length > 1) {
@@ -245,9 +272,11 @@ ___________    .___                         .__/\\      __________              
                 </div>
                 shhh
             </div>
-            <div className='flex flex-row justify-center items-center gap-x-4 text-white text-l w-[80vw] py-4 bg-[#2d3039] rounded-xl rounded-t-none'>
-                visitor@eggland $
-                <textarea ref={entryRef} id="terminal-entry" className='flex jusitfy-center items-center w-[75%] h-6 overflow-hidden bg-[#2d3039] resize-none' onKeyDown={handleKeyPress}>
+            <div className='flex flex-row justify-center items-center gap-x-4 text-white text-l w-[80vw] p-4 bg-[#2d3039] rounded-xl rounded-t-none'>
+                <div className='w-fit text-nowrap'>
+                    visitor@eggland /{workingDirectory.join('/')} $
+                </div>
+                <textarea id="terminal-entry" className='flex jusitfy-center items-center w-full h-6 overflow-hidden bg-[#2d3039] resize-none' onKeyDown={handleKeyPress}>
                 </textarea>
             </div>
         </div >
