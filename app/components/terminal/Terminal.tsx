@@ -1,6 +1,8 @@
+"use client"
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
 import { SetStateAction, useEffect, useRef, useState, Dispatch, KeyboardEvent } from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import fileSystem from '../../data/filesystem.json'
 interface TerminalProps {
     children?: React.JSX.Element
@@ -12,8 +14,8 @@ export default function Terminal({ children }: TerminalProps) {
     const [command, setCommand]: [string, Dispatch<SetStateAction<string>>] = useState<string>("");
     const [logs, setLogs]: [React.JSX.Element[], Dispatch<SetStateAction<React.JSX.Element[]>>] = useState<React.JSX.Element[]>([]);
     const [suggestions, setSuggestions]: [React.JSX.Element[], Dispatch<SetStateAction<React.JSX.Element[]>>] = useState<React.JSX.Element[]>([]);
-
     const [workingDirectory, setWorkingDirectory]: [string[], Dispatch<SetStateAction<string[]>>] = useState<string[]>([]);
+    const router = useRouter();
 
     const supportedCommands: { [key: string]: (args: string[]) => void } = {
         "ls": handleList,
@@ -109,7 +111,49 @@ export default function Terminal({ children }: TerminalProps) {
     }
 
     function handleCatFile(args: string[]) {
+        if (args.length > 1 || args.length == 0) {
+            setLogs([...logs, <p key={logs.length}>visitor@eggland {new Date().toLocaleTimeString()}$ cat {args.join(" ")}</p>, <p key={logs.length + 1}>visitor@eggland {new Date().toLocaleTimeString()}$ <span className={`text-red-500`}>Error with usage of cat: more than 0 or more than one argument was provided</span></p>])
+            return;
+        }
 
+        let locationDirectory = [...workingDirectory];
+        let intendedLocation: string[] = [];
+
+        // Splitting the file path based on the "/" marker (each segment)
+        intendedLocation = args[0].split("/");
+        if (intendedLocation[intendedLocation.length - 1] === '') {
+            intendedLocation.pop();
+        }
+
+        // Updating to reach the appropriate directory location.
+        for (let entry of intendedLocation) {
+            if (entry == ".") {
+                continue;
+            } else if (entry == "..") {
+                locationDirectory.pop();
+            } else {
+                locationDirectory.push(entry);
+            }
+        }
+
+        let directory: any = FS;
+        let lastSeen: any;
+        for (let entry of locationDirectory) {
+            // To change if this doesn't generalize across articles.
+            if (!(entry in directory)) {
+                setLogs([...logs, <p key={logs.length}>visitor@eggland {new Date().toLocaleTimeString()}$ cd {args.join(" ")}</p>, <p key={logs.length + 1}>visitor@eggland {new Date().toLocaleTimeString()}$ <span className={`text-red-500`}>Error with usage of cat: token `{entry}` is not a directory/file.</span></p>])
+                return;
+            }
+
+            lastSeen = (typeof directory[entry])
+            directory = directory[entry];
+        }
+
+        if (lastSeen === 'object') {
+            setLogs([...logs, <p key={logs.length}>visitor@eggland {new Date().toLocaleTimeString()}$ cat {args.join(" ")}</p>, <p key={logs.length + 1}>visitor@eggland {new Date().toLocaleTimeString()}$ <span className={`text-red-500`}>Error with usage of cat: entry is not a file.</span></p>])
+            return;
+        }
+        router.push(`projects/${(intendedLocation[intendedLocation.length - 1]).toLowerCase()}`);
     }
 
     function handleKeyPress(e: KeyboardEvent<HTMLTextAreaElement>) {
