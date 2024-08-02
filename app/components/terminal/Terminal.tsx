@@ -1,6 +1,6 @@
 "use client"
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion'
-import { SetStateAction, useEffect, useRef, useState, Dispatch, KeyboardEvent } from 'react';
+import { SetStateAction, useEffect, useRef, useState, Dispatch, KeyboardEvent, DragEventHandler, DragEvent, MouseEvent } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import fileSystem from '../../data/filesystem.json'
@@ -15,6 +15,13 @@ export default function Terminal({ children }: TerminalProps) {
     const [logs, setLogs]: [React.JSX.Element[], Dispatch<SetStateAction<React.JSX.Element[]>>] = useState<React.JSX.Element[]>([]);
     const [suggestions, setSuggestions]: [React.JSX.Element[], Dispatch<SetStateAction<React.JSX.Element[]>>] = useState<React.JSX.Element[]>([]);
     const [workingDirectory, setWorkingDirectory]: [string[], Dispatch<SetStateAction<string[]>>] = useState<string[]>([]);
+
+    const [x, setX] = useState(0);
+    const [offsetX, setOffsetX] = useState(0);
+    const [y, setY] = useState(0);
+    const [offsetY, setOffsetY] = useState(0);
+    const [isDragging, setDragState] = useState(false);
+
     const router = useRouter();
 
     const supportedCommands: { [key: string]: (args: string[]) => void } = {
@@ -253,9 +260,49 @@ export default function Terminal({ children }: TerminalProps) {
         supportedCommands[action](args);
     }
 
+    function dragOnMouseDown(e: DragEvent<HTMLDivElement>) {
+        setDragState(true);
+        const target = e.target as HTMLDivElement;
+
+        let bounds = target.getBoundingClientRect()
+
+        let ghostElem: HTMLElement | null = document.getElementById("ghost");
+        if (ghostElem) {
+            e.dataTransfer.setDragImage(ghostElem, 0, 0);
+        }
+        setOffsetX(e.clientX - bounds.left);
+        setOffsetY(e.clientY - bounds.top);
+        e.stopPropagation();
+    }
+
+    function drag(e: DragEvent<HTMLDivElement>) {
+        // console.log("movement", e.movementX, e.movementY)
+        console.log("moved how much", e.clientX, e.clientY)
+        if (e.clientX === 0 && e.clientY === 0) {
+            return;
+        }
+        const target = e.target as HTMLDivElement
+        let bounds = target.getBoundingClientRect();
+        console.log(isDragging);
+        setX(e.clientX - offsetX);
+        setY(e.clientY - offsetY);
+        e.stopPropagation();
+    }
+
+    function dragOnMouseUp(e: MouseEvent<HTMLDivElement>) {
+        const target = e.target as HTMLDivElement;
+        setX(e.clientX - offsetX);
+        setY(e.clientY - offsetY);
+    }
+
     return (
-        <div id="terminal-window" className='flex m-8 items-center flex-col rounded-xl'>
-            <div className='relative flex flex-row gap-x-4 px-4 py-2 w-[80vw] rounded-xl bg-[#2d3039] justify-center items-center rounded-b-none'>
+        <div id="terminal-window" style={{ top: `${y}px`, left: `${x}px` }} className={`absolute flex items-center flex-col rounded-xl`}>
+            <div id="ghost" style={{ opacity: "0" }}>.</div>
+            <div
+                draggable
+                onDragStart={dragOnMouseDown} onDragEnd={dragOnMouseUp} onMouseUp={dragOnMouseUp} onDrag={drag}
+                className='relative flex flex-row gap-x-4 px-4 py-2 w-[80vw] rounded-xl bg-[#2d3039] justify-center items-center rounded-b-none'
+            >
                 <div className='absolute flex flex-row gap-x-4 left-[2.5%]'>
                     <div className='bg-[#FF605C] rounded-full w-4 h-4' />
                     <div className='bg-[#FFBD44] rounded-full w-4 h-4' />
