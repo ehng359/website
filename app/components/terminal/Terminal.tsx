@@ -266,35 +266,39 @@ export default function Terminal({ children }: TerminalProps) {
         if (ghostElem) {
             e.dataTransfer.setDragImage(ghostElem, 0, 0);
         }
-        setOffsetX(e.clientX);
-        setOffsetY(e.clientY);
+
+        const target = e.target as HTMLDivElement
+        const targetBounds = target.getBoundingClientRect();
+        console.log(targetBounds)
+        // e.clientX/Y is the mouse cursor inside the element
+        setOffsetX(e.clientX - targetBounds.left);
+        setOffsetY(e.clientY - y);
         e.stopPropagation();
     }
 
     function drag(e: DragEvent<HTMLDivElement>) {
-        // console.log("movement", e.movementX, e.movementY)
-        console.log("moved how much", e.clientX, e.clientY)
         if (e.clientX === 0 && e.clientY === 0) {
             return;
         }
         const target = e.target as HTMLDivElement
-        setX(e.clientX - offsetX);
-        setY(e.clientY - offsetY);
+        setX(Math.max(e.clientX - offsetX, 0))
+        setY(Math.max(e.clientY - offsetY, 0))
         e.stopPropagation();
     }
 
     function dragOnMouseUp(e: MouseEvent<HTMLDivElement>) {
-        setX(e.clientX - offsetX);
-        setY(e.clientY - offsetY);
+        const target = e.target as HTMLDivElement
+        setX(Math.max(e.clientX - offsetX, 0))
+        setY(Math.max(e.clientY - offsetY, 0))
     }
 
     return (
-        <div id="terminal-window" style={{ top: `${y}px`, left: `${x}px` }} className={`absolute flex items-center flex-col rounded-xl`}>
-            <div id="ghost" style={{ opacity: "0" }}>.</div>
+        <div id="terminal-window" style={{ top: `${y}px`, left: `${x}px` }} className={`absolute flex items-center flex-col rounded-xl z-50`}>
+            <div id="ghost" className="absolute" style={{ opacity: "0" }}>.</div>
             <div
                 draggable
                 onDragStart={dragOnMouseDown} onDragEnd={dragOnMouseUp} onDrag={drag}
-                className='relative flex flex-row gap-x-4 px-4 py-2 w-[80vw] rounded-xl bg-[#2d3039] justify-center items-center rounded-b-none'
+                className='relative flex flex-row gap-x-4 px-4 py-2 w-[70vw] rounded-xl bg-[#2d3039] justify-center items-center rounded-b-none'
             >
                 <div className='absolute flex flex-row gap-x-4 left-[2.5%]'>
                     <div className='bg-[#FF605C] rounded-full w-4 h-4' />
@@ -308,7 +312,7 @@ export default function Terminal({ children }: TerminalProps) {
                     </div>
                 </div>
             </div>
-            <div className='relative w-[80vw] max-w-full h-[80vh] bg-dark flex flex-col justify-between items-center overflow-y-hidden overflow-x-hidden'>
+            <div className='relative w-[70vw] max-w-full h-[60vh] bg-dark flex flex-col justify-between items-center overflow-y-hidden overflow-x-hidden'>
                 <div className='absolute text-white left-[5%] overflow-x-clipped overflow-y-scroll h-full'>
                     <pre className='font-mono text-sm'>
                         <code>
@@ -348,7 +352,7 @@ ___________    .___                         .__/\\      __________              
                     </div>
                 </div>
             </div>
-            <div className='relative bg-dark w-[80vw]'>
+            <div className='relative bg-dark w-[70vw]'>
                 <div id="suggestions" className='absolute flex flex-row items-center gap-x-[2%] text-white w-full mx-[5%]'>
                     {
                         suggestions.map((value) => value)
@@ -356,7 +360,7 @@ ___________    .___                         .__/\\      __________              
                 </div>
                 shhh
             </div>
-            <div className='flex flex-row justify-center items-center gap-x-4 text-white text-l w-[80vw] p-4 bg-[#2d3039] rounded-xl rounded-t-none'>
+            <div className='flex flex-row justify-center items-center gap-x-4 text-white text-l w-[70vw] p-4 bg-[#2d3039] rounded-xl rounded-t-none'>
                 <div className='w-fit text-nowrap'>
                     visitor@eggland /{workingDirectory.join('/')} $
                 </div>
