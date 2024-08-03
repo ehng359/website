@@ -3,7 +3,7 @@ import React from "react";
 import Terminal from "../components/terminal/Terminal";
 export default function Projects() {
   return (
-    <main className="mt-[10%]">
+    <main className="relative mt-[10%] mx-[10%] h-screen">
       <Terminal>
 
       </Terminal>

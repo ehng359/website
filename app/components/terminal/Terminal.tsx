@@ -262,16 +262,12 @@ export default function Terminal({ children }: TerminalProps) {
 
     function dragOnMouseDown(e: DragEvent<HTMLDivElement>) {
         setDragState(true);
-        const target = e.target as HTMLDivElement;
-
-        let bounds = target.getBoundingClientRect()
-
         let ghostElem: HTMLElement | null = document.getElementById("ghost");
         if (ghostElem) {
             e.dataTransfer.setDragImage(ghostElem, 0, 0);
         }
-        setOffsetX(e.clientX - bounds.left);
-        setOffsetY(e.clientY - bounds.top);
+        setOffsetX(e.clientX);
+        setOffsetY(e.clientY);
         e.stopPropagation();
     }
 
@@ -282,15 +278,12 @@ export default function Terminal({ children }: TerminalProps) {
             return;
         }
         const target = e.target as HTMLDivElement
-        let bounds = target.getBoundingClientRect();
-        console.log(isDragging);
         setX(e.clientX - offsetX);
         setY(e.clientY - offsetY);
         e.stopPropagation();
     }
 
     function dragOnMouseUp(e: MouseEvent<HTMLDivElement>) {
-        const target = e.target as HTMLDivElement;
         setX(e.clientX - offsetX);
         setY(e.clientY - offsetY);
     }
@@ -300,7 +293,7 @@ export default function Terminal({ children }: TerminalProps) {
             <div id="ghost" style={{ opacity: "0" }}>.</div>
             <div
                 draggable
-                onDragStart={dragOnMouseDown} onDragEnd={dragOnMouseUp} onMouseUp={dragOnMouseUp} onDrag={drag}
+                onDragStart={dragOnMouseDown} onDragEnd={dragOnMouseUp} onDrag={drag}
                 className='relative flex flex-row gap-x-4 px-4 py-2 w-[80vw] rounded-xl bg-[#2d3039] justify-center items-center rounded-b-none'
             >
                 <div className='absolute flex flex-row gap-x-4 left-[2.5%]'>
