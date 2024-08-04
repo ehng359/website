@@ -16,6 +16,7 @@ export default function Terminal({ children, closeTerminal }: TerminalProps) {
     const [logs, setLogs]: [React.JSX.Element[], Dispatch<SetStateAction<React.JSX.Element[]>>] = useState<React.JSX.Element[]>([]);
     const [suggestions, setSuggestions]: [React.JSX.Element[], Dispatch<SetStateAction<React.JSX.Element[]>>] = useState<React.JSX.Element[]>([]);
     const [workingDirectory, setWorkingDirectory]: [string[], Dispatch<SetStateAction<string[]>>] = useState<string[]>([]);
+    const [isFullScreen, setFullScreen] = useState(false);
 
     const [x, setX] = useState(0);
     const [offsetX, setOffsetX] = useState(0);
@@ -291,22 +292,22 @@ export default function Terminal({ children, closeTerminal }: TerminalProps) {
         setY(Math.max(e.clientY - offsetY, 0))
     }
 
-    function setFullScreen() {
-        console.log("setting full screen")
+    function toggleFullScreen() {
+        setFullScreen(!isFullScreen);
     }
 
     return (
-        <div id="terminal-window" style={{ top: `${y}px`, left: `${x}px` }} className={`absolute flex items-center flex-col rounded-xl z-50`}>
+        <div id="terminal-window" style={{ top: `${isFullScreen ? 0 : y}px`, left: `${isFullScreen ? 0 : x}px` }} className={`absolute flex items-center flex-col rounded-xl z-50`}>
             <div id="ghost" className="absolute" style={{ opacity: "0" }}>.</div>
             <div
                 draggable
                 onDragStart={dragOnMouseDown} onDragEnd={dragOnMouseUp} onDrag={drag}
-                className='relative flex flex-row gap-x-4 px-4 py-2 w-[70vw] rounded-xl bg-[#2d3039] justify-center items-center rounded-b-none'
+                className={`relative flex flex-row gap-x-4 px-4 py-2 ${isFullScreen ? "w-[100vw]" : "w-[70vw]"} rounded-xl bg-[#2d3039] justify-center items-center rounded-b-none`}
             >
                 <div className='absolute flex flex-row gap-x-4 left-[2.5%]'>
-                    <div className='bg-[#FF605C] rounded-full w-4 h-4' onClick={closeTerminal} />
-                    <div className='bg-[#FFBD44] rounded-full w-4 h-4' />
-                    <div className='bg-[#00CA4E] rounded-full w-4 h-4' />
+                    <div className='bg-[#FF605C] rounded-full w-4 h-4 opacity-80 hover:opacity-100' onClick={closeTerminal} />
+                    <div className={`${isFullScreen ? "bg-dark" : "bg-[#FFBD44]"} rounded-full w-4 h-4 opacity-80 hover:opacity-100`} />
+                    <div className='bg-[#00CA4E] rounded-full w-4 h-4 opacity-80 hover:opacity-100' onClick={toggleFullScreen} />
                 </div>
                 <div className='text-white flex flex-row gap-x-[5%] justify-center items-center w-[15%]'>
                     <Image src="/website/Folder.svg" height={35} width={35} alt="Profile picture for Edward Ng"></Image>
@@ -315,7 +316,7 @@ export default function Terminal({ children, closeTerminal }: TerminalProps) {
                     </div>
                 </div>
             </div>
-            <div className='relative w-[70vw] max-w-full h-[60vh] bg-dark flex flex-col justify-between items-center overflow-y-hidden overflow-x-hidden'>
+            <div className={`relative ${isFullScreen ? "w-[100vw] h-[86vh]" : "w-[70vw] h-[60vh]"} max-w-full bg-dark flex flex-col justify-between items-center overflow-y-hidden overflow-x-hidden`}>
                 <div className='absolute text-white left-[5%] overflow-x-clipped overflow-y-scroll h-full'>
                     <pre className='font-mono text-sm'>
                         <code>
@@ -355,7 +356,7 @@ ___________    .___                         .__/\\      __________              
                     </div>
                 </div>
             </div>
-            <div className='relative bg-dark w-[70vw]'>
+            <div className={`relative bg-dark ${isFullScreen ? "w-[100vw]" : "w-[70vw]"}`}>
                 <div id="suggestions" className='absolute flex flex-row items-center gap-x-[2%] text-white w-full mx-[5%]'>
                     {
                         suggestions.map((value) => value)
@@ -363,7 +364,7 @@ ___________    .___                         .__/\\      __________              
                 </div>
                 shhh
             </div>
-            <div className='flex flex-row justify-center items-center gap-x-4 text-white text-l w-[70vw] p-4 bg-[#2d3039] rounded-xl rounded-t-none'>
+            <div className={`flex flex-row justify-center items-center gap-x-4 text-white text-l ${isFullScreen ? "w-[100vw]" : "w-[70vw]"} p-4 bg-[#2d3039] rounded-xl rounded-t-none`}>
                 <div className='w-fit text-nowrap'>
                     visitor@eggland /{workingDirectory.join('/')} $
                 </div>
