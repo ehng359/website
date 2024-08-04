@@ -6,11 +6,12 @@ import { useRouter } from 'next/navigation';
 import fileSystem from '../../data/filesystem.json'
 interface TerminalProps {
     children?: React.JSX.Element
+    closeTerminal: () => void
 }
 
 const FS: { [key: string]: { [key: string]: { [key: string]: string } } } = fileSystem;
 
-export default function Terminal({ children }: TerminalProps) {
+export default function Terminal({ children, closeTerminal }: TerminalProps) {
     const [command, setCommand]: [string, Dispatch<SetStateAction<string>>] = useState<string>("");
     const [logs, setLogs]: [React.JSX.Element[], Dispatch<SetStateAction<React.JSX.Element[]>>] = useState<React.JSX.Element[]>([]);
     const [suggestions, setSuggestions]: [React.JSX.Element[], Dispatch<SetStateAction<React.JSX.Element[]>>] = useState<React.JSX.Element[]>([]);
@@ -20,7 +21,6 @@ export default function Terminal({ children }: TerminalProps) {
     const [offsetX, setOffsetX] = useState(0);
     const [y, setY] = useState(0);
     const [offsetY, setOffsetY] = useState(0);
-    const [isDragging, setDragState] = useState(false);
 
     const router = useRouter();
 
@@ -261,7 +261,6 @@ export default function Terminal({ children }: TerminalProps) {
     }
 
     function dragOnMouseDown(e: DragEvent<HTMLDivElement>) {
-        setDragState(true);
         let ghostElem: HTMLElement | null = document.getElementById("ghost");
         if (ghostElem) {
             e.dataTransfer.setDragImage(ghostElem, 0, 0);
@@ -292,6 +291,10 @@ export default function Terminal({ children }: TerminalProps) {
         setY(Math.max(e.clientY - offsetY, 0))
     }
 
+    function setFullScreen() {
+        console.log("setting full screen")
+    }
+
     return (
         <div id="terminal-window" style={{ top: `${y}px`, left: `${x}px` }} className={`absolute flex items-center flex-col rounded-xl z-50`}>
             <div id="ghost" className="absolute" style={{ opacity: "0" }}>.</div>
@@ -301,7 +304,7 @@ export default function Terminal({ children }: TerminalProps) {
                 className='relative flex flex-row gap-x-4 px-4 py-2 w-[70vw] rounded-xl bg-[#2d3039] justify-center items-center rounded-b-none'
             >
                 <div className='absolute flex flex-row gap-x-4 left-[2.5%]'>
-                    <div className='bg-[#FF605C] rounded-full w-4 h-4' />
+                    <div className='bg-[#FF605C] rounded-full w-4 h-4' onClick={closeTerminal} />
                     <div className='bg-[#FFBD44] rounded-full w-4 h-4' />
                     <div className='bg-[#00CA4E] rounded-full w-4 h-4' />
                 </div>
