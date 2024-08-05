@@ -55,6 +55,7 @@ export default function NavBar() {
                 {
                     showNotifs ?
                         <div className="absolute mt-12 p-4 w-96 rounded-lg bg-accent" onMouseLeave={() => { setShowNotifs(false); }}>
+                            <NotifCard content={`08/04/24 - Added a secret mascot... shhh!`} />
                             <NotifCard content={`07/30/24 - Updated About Me + implemented ls/cd on terminal.`} />
                             <NotifCard content={`07/23/24 - Initial rundown at creating projects showcase.`} />
                             <NotifCard content={`07/22/24 - Initial rundown at creating notification bar.`} />
