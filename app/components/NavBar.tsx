@@ -35,7 +35,7 @@ export default function NavBar() {
     }, [scroll])
 
     return (
-        <main id="navbar" className={`backdrop-invert z-50 w-1/2 ${h} ${bg} text-black px-16 flex justify-center items-center rounded-full fixed left-1/4 top-4 transition-all duration-500 delay-100 bg-opacity-90 mt-[2.5%]`}>
+        <main id="navbar" className={`backdrop-invert z-30 w-1/2 ${h} ${bg} text-black px-16 flex justify-center items-center rounded-full fixed left-1/4 top-4 transition-all duration-500 delay-100 bg-opacity-90 mt-[2.5%]`}>
             {
                 pathname !== "/" ? (
                     <button onClick={() => { router.back() }} className="relative right-[25%] w-16">

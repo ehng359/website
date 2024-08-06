@@ -6,12 +6,14 @@ import { useRouter } from 'next/navigation';
 import fileSystem from '../../data/filesystem.json'
 interface TerminalProps {
     children?: React.JSX.Element
+    isMinimized: boolean
     closeTerminal: () => void
+    minimizeTerminal: () => void
 }
 
 const FS: { [key: string]: { [key: string]: { [key: string]: string } } } = fileSystem;
 
-export default function Terminal({ children, closeTerminal }: TerminalProps) {
+export default function Terminal({ children, closeTerminal, isMinimized, minimizeTerminal }: TerminalProps) {
     const [command, setCommand]: [string, Dispatch<SetStateAction<string>>] = useState<string>("");
     const [logs, setLogs]: [React.JSX.Element[], Dispatch<SetStateAction<React.JSX.Element[]>>] = useState<React.JSX.Element[]>([]);
     const [suggestions, setSuggestions]: [React.JSX.Element[], Dispatch<SetStateAction<React.JSX.Element[]>>] = useState<React.JSX.Element[]>([]);
@@ -297,7 +299,7 @@ export default function Terminal({ children, closeTerminal }: TerminalProps) {
     }
 
     return (
-        <div id="terminal-window" style={{ top: `${isFullScreen ? 0 : y}px`, left: `${isFullScreen ? 0 : x}px` }} className={`absolute flex items-center flex-col rounded-xl z-50`}>
+        <div id="terminal-window" style={{ top: `${isFullScreen ? 0 : y}px`, left: `${isFullScreen ? 0 : x}px` }} className={`absolute flex items-center flex-col rounded-xl z-50 ${isMinimized ? "opacity-0" : ""}`}>
             <div id="ghost" className="absolute" style={{ opacity: "0" }}>.</div>
             <div
                 draggable
@@ -306,7 +308,7 @@ export default function Terminal({ children, closeTerminal }: TerminalProps) {
             >
                 <div className='absolute flex flex-row gap-x-4 left-[2.5%]'>
                     <div className='bg-[#FF605C] rounded-full w-4 h-4 opacity-80 hover:opacity-100' onClick={closeTerminal} />
-                    <div className={`${isFullScreen ? "bg-dark" : "bg-[#FFBD44]"} rounded-full w-4 h-4 opacity-80 hover:opacity-100`} />
+                    <div className={`${isFullScreen ? "bg-dark" : "bg-[#FFBD44]"} rounded-full w-4 h-4 opacity-80 hover:opacity-100`} onClick={isFullScreen ? () => { } : minimizeTerminal} />
                     <div className='bg-[#00CA4E] rounded-full w-4 h-4 opacity-80 hover:opacity-100' onClick={toggleFullScreen} />
                 </div>
                 <div className='text-white flex flex-row gap-x-[5%] justify-center items-center w-[15%]'>
