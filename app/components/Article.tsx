@@ -8,6 +8,7 @@ interface ArticleProps {
 export default function Article({ title, paragraphs, fileName }: ArticleProps) {
     return (
         <main>
+            Testing default article setup.
         </main>
     )
 }
