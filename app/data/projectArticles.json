@@ -192,7 +192,10 @@
             "The Beginnings"
         ],
         "paragraphs": [
-            []
+            [
+                "Welcome to the very first article of my very own website!",
+                "I began drafting up the idea of creating the website from 2021 (1st year), but like many others who make empty promises with large ambitions, I never really got working on it. Ruminating in that sentiment, now as a 4th year, I wanted to demonstrate that I have grown from that mentality, and the existence and steady progress for developing the content and the information surrounding my life, professionally, is a testament to my growth. In essence, this is my magnum opus (so far). "
+            ]
         ],
         "tags": [
             "TypeScript",
